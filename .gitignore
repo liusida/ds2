@@ -1,3 +1,5 @@
+tmp_*
+
 #latex
 *.aux
 *.fdb_latexmk
@@ -5,6 +7,8 @@
 *.pdf
 *.out
 *.synctex.gz
+*.bbl
+*.blg
 
 
 # Byte-compiled / optimized / DLL files
