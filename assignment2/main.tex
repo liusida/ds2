@@ -1,0 +1,109 @@
+\newcommand\chapternumber{2}
+\input{../tex_header/header.tex}
+\usepackage{enumerate}
+\usepackage{float}
+
+\begin{document}
+
+\section{Find constants / partition functions.}
+\subsection{}
+\begin{align*}
+    f(x|a,b) = 1 \text{ on } x \in [a,b]
+\end{align*}
+
+First, let's take integral of $f(x)$:
+\begin{align*}
+    \int dx\ f(x)
+    &= \int_a^b dx\ 1 \\
+    &= b-a
+\end{align*}
+
+So, if we want $\int dx\ p(x) = 1$, and $p(x) = \frac{1}{\mathcal{Z}} f(x)$, we have:
+\begin{align}
+    \int dx\ \frac{1}{\mathcal{Z}} f(x) &= 1 \nonumber \\
+    \frac{1}{\mathcal{Z}} \int dx\  f(x) &= 1 \nonumber \\
+    \int dx\ f(x) &= \mathcal{Z}  \\
+    b-a &= \mathcal{Z} \nonumber 
+\end{align}
+
+So, $\mathcal{Z} = b-a$. 
+
+Equation (1) can also applies to other functions in question 1, and it indicates that the normalizing constant is just the integral of the function.
+
+\subsection{}
+\begin{align*}
+    f(x|\beta) = \exp(-\frac{x}{\beta}) \text{ on } x \in (0,\infty) \text{ and } \beta \in (0, \infty)
+\end{align*}
+
+First, let's take integral of $f(x)$:
+\begin{align*}
+    \int dx\ f(x) 
+    &= \int_0^{\infty} dx\ \exp(-\frac{x}{\beta}) \\
+    &= (-\beta \cdot \exp(-\frac{x}{\beta})) \biggr\rvert _0^{\infty} \\
+    &= -\beta \cdot (\exp(-\infty)-\exp(0)) \\
+    &= \beta 
+\end{align*}
+
+So, substitude to equation (1), we have $\mathcal{Z} = \beta$.
+
+\subsection{}
+\begin{align*}
+    f(x|\mu,\sigma)=\exp[\frac{(x-\mu)^2}{2\sigma^2}]
+\end{align*}
+where $x \in (-\infty, \infty)$, $\mu \in (-\infty, \infty)$, $\sigma \in (0, \infty)$.
+
+First, we start from the PDF of the Normal distribution: 
+\begin{align*}
+    p(x) &= c \exp[-\frac{(x-\mu)^2}{2\sigma^2}] \\
+    &= \frac{c}{\exp[\frac{(x-\mu)^2}{2\sigma^2}]}
+\end{align*}
+here, $c$ is some constant.
+
+So,
+\begin{align*}
+    f(x|\mu,\sigma) = \frac{c}{p(x)}
+\end{align*}
+
+We know when $x \ll \mu$ or $x \gg \mu$, $p(x) \rightarrow 0$, and $f(x) \rightarrow \infty$, so the integral of $f(x)$ is $\infty$.
+This means there is no $\mathcal{Z}$ that can normalize $f(x)$ to a probability function.
+
+\subsection{}
+\begin{align*}
+    f(x|a,\gamma)=\frac{1}{x^\gamma}
+\end{align*}
+where $x \in (a, \infty)$, $a \in (0, \infty)$, $\gamma \in (0, \infty)$.
+
+There are three cases: (1) $\gamma>1$, (2) $\gamma=1$, (3) $0<\gamma<1$.
+
+In case (1) $\gamma>1$:
+\begin{align*}
+    \int_a^{\infty} dx\ \frac{1}{x^{\gamma}}
+    &= \frac{x^{1-\gamma}}{1-\gamma} \biggr\rvert _a^{\infty} \\
+    &= 0 - \frac{a^{1-\gamma}}{1-\gamma} \\
+    &= \frac{1}{a^{\gamma-1} (\gamma-1)}
+\end{align*}
+
+So, in case (1), $\mathcal{Z} = \frac{1}{a^{\gamma-1} (\gamma-1)}$.
+
+In case (2) $\gamma=1$:
+\begin{align*}
+    \int_a^{\infty} dx\ \frac{1}{x}
+    &= \log(x) \biggr\rvert _a^{\infty} \\
+    &= \infty
+\end{align*}
+
+So, in case (2), $\mathcal{Z}$ doesn't exist.
+
+In case (3) $0<\gamma<1$:
+\begin{align*}
+    \int_a^{\infty} dx\ \frac{1}{x^{\gamma}}
+    &= \frac{x^{1-\gamma}}{1-\gamma} \biggr\rvert _a^{\infty} \\
+    &= \infty    
+\end{align*}
+
+So, in case (3), $\mathcal{Z}$ doesn't exist.
+
+Thus, in summary, if $f(x|a,\gamma)$ is defined on $\gamma \in (0, \infty)$, $\mathcal{Z}$ doesn't exist.
+
+
+\end{document}
