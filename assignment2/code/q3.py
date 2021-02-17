@@ -100,7 +100,11 @@ def m2_power(parameters):
         return a*a*(gamma-1)*(1/(gamma-3) - (gamma-1)/((gamma-2)*(gamma-2)))
     return np.inf
 
+######
+
+
 def table(df, title=""):
+    """output latex tables"""
     print(r"""
     \newpage
     \begin{table}[h!]
@@ -125,7 +129,7 @@ def table(df, title=""):
 if __name__=='__main__':
 
     latex = False
-    if len(sys.argv)>1:
+    if len(sys.argv)>1: # if there's any argument, output latex.
         latex = True
 
     print("")
