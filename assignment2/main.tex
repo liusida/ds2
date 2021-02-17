@@ -13,22 +13,22 @@
 
 First, let's take integral of $f(x)$:
 \begin{align*}
-    \int dx\ f(x)
-    &= \int_a^b dx\ 1 \\
+    \int f(x) \ dx
+    &= \int_a^b 1 \ dx\\
     &= b-a
 \end{align*}
 
-So, if we want $\int dx\ p(x) = 1$, and $p(x) = \frac{1}{\mathcal{Z}} f(x)$, we have:
+So, if we want $\int p(x) \ dx = 1$, and $p(x) = \frac{1}{\mathcal{Z}} f(x)$, we have:
 \begin{align}
-    \int dx\ \frac{1}{\mathcal{Z}} f(x) &= 1 \nonumber \\
-    \frac{1}{\mathcal{Z}} \int dx\  f(x) &= 1 \nonumber \\
-    \int dx\ f(x) &= \mathcal{Z}  \\
+    \int \frac{1}{\mathcal{Z}} f(x) \ dx&= 1 \nonumber \\
+    \frac{1}{\mathcal{Z}} \int  f(x) \ dx&= 1 \nonumber \\
+    \int f(x) \ dx&= \mathcal{Z}  \\
     b-a &= \mathcal{Z} \nonumber 
 \end{align}
 
 So, $\mathcal{Z} = b-a$. 
 
-Equation (1) can also applies to other functions in question 1, and it indicates that the normalizing constant is just the integral of the function.
+Equation (1) can also apply to other functions in question 1, and it indicates that the normalizing constant is just the integral of the function.
 
 \subsection{}
 \begin{align*}
@@ -37,8 +37,8 @@ Equation (1) can also applies to other functions in question 1, and it indicates
 
 First, let's take integral of $f(x)$:
 \begin{align*}
-    \int dx\ f(x) 
-    &= \int_0^{\infty} dx\ \exp(-\frac{x}{\beta}) \\
+    \int f(x) \ dx
+    &= \int_0^{\infty} \exp(-\frac{x}{\beta})\ dx \\
     &= (-\beta \cdot \exp(-\frac{x}{\beta})) \biggr\rvert _0^{\infty} \\
     &= -\beta \cdot (\exp(-\infty)-\exp(0)) \\
     &= \beta 
@@ -48,25 +48,42 @@ So, substitude to equation (1), we have $\mathcal{Z} = \beta$.
 
 \subsection{}
 \begin{align*}
-    f(x|\mu,\sigma)=\exp[\frac{(x-\mu)^2}{2\sigma^2}]
+    f(x|\mu,\sigma)=\exp[-\frac{(x-\mu)^2}{2\sigma^2}]
 \end{align*}
 where $x \in (-\infty, \infty)$, $\mu \in (-\infty, \infty)$, $\sigma \in (0, \infty)$.
 
-First, we start from the PDF of the Normal distribution: 
+To find the integral of $f$, we need to square it:
 \begin{align*}
-    p(x) &= c \exp[-\frac{(x-\mu)^2}{2\sigma^2}] \\
-    &= \frac{c}{\exp[\frac{(x-\mu)^2}{2\sigma^2}]}
-\end{align*}
-here, $c$ is some constant.
-
-So,
-\begin{align*}
-    f(x|\mu,\sigma) = \frac{c}{p(x)}
+    \int f(x|\mu, \sigma) \ dx &= \sqrt{\int_{-\infty}^{\infty} f(x|\mu, \sigma) \ dx \cdot \int_{-\infty}^{\infty} f(x|\mu, \sigma) \ dx} \\
+    &= \sqrt{\int_{-\infty}^{\infty} f(x|\mu, \sigma) \ dx \cdot \int_{-\infty}^{\infty} f(y|\mu, \sigma) \ dy} \\
+    &= \sqrt{\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(x|\mu, \sigma) \cdot f(y|\mu, \sigma) \ dx\ dy} \\
+    &= \sqrt{\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \exp[-\frac{(x-\mu)^2}{2\sigma^2}] \cdot \exp[-\frac{(y-\mu)^2}{2\sigma^2}] \ dx\ dy} \\
+    &= \sqrt{\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \exp[-\frac{(x-\mu)^2}{2\sigma^2}-\frac{(y-\mu)^2}{2\sigma^2}] \ dx\ dy} \\
+    &= \sqrt{\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \exp[-\frac{(x-\mu)^2 + (y-\mu)^2}{2\sigma^2}] \ dx\ dy} \\
 \end{align*}
 
-We know when $x \ll \mu$ or $x \gg \mu$, $p(x) \rightarrow 0$, and $f(x) \rightarrow \infty$, so the integral of $f(x)$ is $\infty$.
-This means there is no $\mathcal{Z}$ that can normalize $f(x)$ to a probability function.
+Let's set the new origin at $(\mu, \mu)$, and turn the equation into polar coordinate:
+\begin{align*}
+    \int f(x|\mu, \sigma) \ dx
+    &= \sqrt{\int_{-0}^{2 \pi} \int_{0}^{\infty} \exp[-\frac{r^2}{2\sigma^2}] \cdot r \ dx\ dy} \\
+    &= \sqrt{\int_{-0}^{2 \pi} \sigma^2 \ dy} \\
+    &= \sqrt{2 \sigma^2 \pi } \\
+\end{align*}
 
+We know $\sigma > 0$, so $\mathcal{Z} = \sigma \sqrt{2 \pi}$.
+% First, we start from the PDF of the Normal distribution: 
+% \begin{align*}
+%     p(x) &= \frac{1}{\sigma \sqrt{2 \pi}} \cdot \exp[-\frac{(x-\mu)^2}{2\sigma^2}] \\
+%     &= \frac{1}{\sigma \sqrt{2 \pi}} \cdot f(x|\mu, \sigma)
+% \end{align*}
+
+% So,
+% \begin{align*}
+%     f(x|\mu,\sigma) = \sigma \sqrt{2 \pi} \cdot p(x)
+% \end{align*}
+
+% We know that Normal distribution is a probability distribution, so $\int p(x) \ dx=1$. 
+% Thus $\int f(x|\mu, \sigma) \ dx  = \sigma \sqrt{2 \pi} \cdot 1$, and $\mathcal{Z} = \sigma \sqrt{2 \pi}$.
 \subsection{}
 \begin{align*}
     f(x|a,\gamma)=\frac{1}{x^\gamma}
@@ -77,7 +94,7 @@ There are three cases: (1) $\gamma>1$, (2) $\gamma=1$, (3) $0<\gamma<1$.
 
 In case (1) $\gamma>1$:
 \begin{align*}
-    \int_a^{\infty} dx\ \frac{1}{x^{\gamma}}
+    \int_a^{\infty} \frac{1}{x^{\gamma}} \ dx
     &= \frac{x^{1-\gamma}}{1-\gamma} \biggr\rvert _a^{\infty} \\
     &= 0 - \frac{a^{1-\gamma}}{1-\gamma} \\
     &= \frac{1}{a^{\gamma-1} (\gamma-1)}
@@ -87,7 +104,7 @@ So, in case (1), $\mathcal{Z} = \frac{1}{a^{\gamma-1} (\gamma-1)}$.
 
 In case (2) $\gamma=1$:
 \begin{align*}
-    \int_a^{\infty} dx\ \frac{1}{x}
+    \int_a^{\infty} \frac{1}{x} \ dx
     &= \log(x) \biggr\rvert _a^{\infty} \\
     &= \infty
 \end{align*}
@@ -96,7 +113,7 @@ So, in case (2), $\mathcal{Z}$ doesn't exist.
 
 In case (3) $0<\gamma<1$:
 \begin{align*}
-    \int_a^{\infty} dx\ \frac{1}{x^{\gamma}}
+    \int_a^{\infty} \frac{1}{x^{\gamma}} \ dx
     &= \frac{x^{1-\gamma}}{1-\gamma} \biggr\rvert _a^{\infty} \\
     &= \infty    
 \end{align*}
@@ -105,5 +122,189 @@ So, in case (3), $\mathcal{Z}$ doesn't exist.
 
 Thus, in summary, if $f(x|a,\gamma)$ is defined on $\gamma \in (0, \infty)$, $\mathcal{Z}$ doesn't exist.
 
+\section{1st and 2nd moment}
+In the previous question, only 1.1 and 1.2 can be properly-normalized.
+
+\subsection{}
+For 1.1, $\mathcal{Z}=b-a$, and $p(x)=\frac{1}{b-a}$.
+\begin{align*}
+    m_1 &= E_{x \sim p(x)}[x] \\
+    &= \int_a^b p(x) x \ dx\\
+    &= \int_a^b \frac{x}{b-a} \ dx\\
+    &= \frac{a+b}{2}
+\end{align*}
+
+\begin{align*}
+    m_2 &= E_{x \sim p(x)}[(x-m_1)^2] \\
+    &= E_{x \sim p(x)}[(x-\frac{a+b}{2})^2] \\
+    &= \int_a^b p(x) (x-\frac{a+b}{2})^2 \ dx\\
+    &= \int_a^b \frac{(x-\frac{a+b}{2})^2}{b-a}  \ dx\\
+    &= \frac{1}{b-a} \int_a^b (x^2 - (a+b)x + \frac{1}{4}(a+b)^2) )  \ dx\\
+    &= \frac{1}{b-a} (\frac{1}{3}(b^3-a^3) - \frac{1}{2}(a+b)(b^2-a^2) + \frac{1}{4}(b-a)(a+b)^2) \\
+    &= \frac{1}{12} (b-a)^2
+\end{align*}
+
+\subsection{}
+For 1.2, $\mathcal{Z}=\beta$, and $p(x)=\frac{1}{\beta} \exp(-\frac{x}{\beta})$.
+\begin{align*}
+    m_1 &= E_{x \sim p(x)}[x] \\
+    &= \int_0^{\infty} p(x) x \ dx\\
+    &= \int_0^{\infty} \frac{1}{\beta} \exp(-\frac{x}{\beta}) x \ dx\\
+    &= \frac{1}{\beta} \int_0^{\infty} \exp(-\frac{x}{\beta}) x \ dx\\
+    &= \frac{1}{\beta} [\beta (-\exp(-\frac{x}{\beta})(\beta+x))] \biggr\rvert _0^{\infty} \\
+\end{align*}
+Here, we have $\beta>0$, so, $\exp(-\frac{x}{\beta}) x \rightarrow 0$ when $x \rightarrow 0$.
+\begin{align*}
+    m_1 &= \frac{1}{\beta} [0 + \beta (\beta+0))] \\
+    &= \beta
+\end{align*}
+
+\begin{align*}
+    m_2 &= E_{x \sim p(x)}[(x-m_1)^2] \\
+    &= E_{x \sim p(x)}[(x-\beta)^2] \\
+    &= \int_0^{\infty} p(x) (x-\beta)^2 \ dx \\
+    &= \int_0^{\infty} \frac{1}{\beta} \exp(-\frac{x}{\beta}) (x-\beta)^2 \ dx \\
+    &= \frac{1}{\beta} \int_0^{\infty} \exp(-\frac{x}{\beta}) (x^2-2\beta x + \beta^2) \ dx \\
+    &= \frac{1}{\beta} [ \int_0^{\infty} \exp(-\frac{x}{\beta}) x^2 \ dx -2 \int_0^{\infty} \exp(-\frac{x}{\beta}) \beta x \ dx + \int_0^{\infty} \exp(-\frac{x}{\beta}) \beta^2 \ dx ] \\
+    &= \frac{1}{\beta} [ (\beta(-\exp(-\frac{x}{\beta})(2\beta^2+x^2+2\beta x)))|_0^{\infty} -2 (\beta^2(-\exp(-\frac{x}{\beta})(\beta+x)))|_0^{\infty} \\
+    &\  + (\beta^3(-\exp(-\frac{x}{\beta})))|_0^{\infty} ]
+\end{align*}
+For the same argument in case of $\beta>0$, $\exp(-\frac{x}{\beta}) x \rightarrow 0$ and $\exp(-\frac{x}{\beta}) x^2 \rightarrow 0$ when $x \rightarrow 0$:
+\begin{align*}
+    m_2 &= \frac{1}{\beta} [ 2 \beta^3 -2 \beta^3 + \beta^3 ] \\
+    &= \beta^2
+\end{align*}
+
+\subsection{}
+For 1.3, $\mathcal{Z} = \sigma \sqrt{2 \pi}$, and $p(x)=\frac{1}{\sigma \sqrt{2 \pi}} \exp(-\frac{(x-\mu)^2}{2 \sigma^2})$.
+\begin{align*}
+    m_1 &= E_{x \sim p(x)}[x] \\
+    &= \int_{-\infty}^{\infty} p(x) x \ dx \\
+    &= \int_{-\infty}^{\infty} \frac{1}{\sigma \sqrt{2 \pi}} \exp(-\frac{(x-\mu)^2}{2 \sigma^2}) x \ dx \\
+    &= \int_{-\infty}^{\infty} \frac{1}{\sigma \sqrt{2 \pi}} \exp(-\frac{(x-\mu)^2}{2 \sigma^2}) (x-\mu) + \mu \cdot \frac{1}{\sigma \sqrt{2 \pi}} \exp(-\frac{(x-\mu)^2}{2 \sigma^2}) \ dx \\
+\end{align*}
+
+Let $y = x - \mu$, we can see the first part is 0 (from question 1.3).
+And we write the second part back into the form of $p(x)$, which is the normalized probability density function.
+\begin{align*}
+    m_1
+    &= \int_{-\infty}^{\infty} \frac{1}{\sigma \sqrt{2 \pi}} \exp(-\frac{y^2}{2 \sigma^2}) y + \mu \cdot p(x) \ dx \\
+    &= \int_{-\infty}^{\infty} \mu \cdot p(x) \ dx \\
+    &= \mu
+\end{align*}
+
+\begin{align*}
+    m_2 &= E_{x \sim p(x)}[(x-m_1)^2] \\
+    &= E_{x \sim p(x)}[(x-\mu)^2] \\
+    &= \int_{-\infty}^{\infty} p(x) (x-\mu)^2 \ dx \\
+    &= \int_{-\infty}^{\infty} \frac{1}{\sigma \sqrt{2 \pi}} \exp[-\frac{(x-\mu)^2}{2 \sigma^2}] (x-\mu)^2 \ dx \\
+\end{align*}
+
+Let $y=\frac{x-\mu}{\sqrt{2}\sigma}$, so, $dx = \sqrt{2} \sigma\ dy$, we have:
+\begin{align*}
+    m_2 &= 
+    \int_{-\infty}^{\infty} \frac{1}{\sigma \sqrt{2 \pi}} \exp[-y^2] 2\sigma^2 y^2  \sqrt{2} \sigma \ dy \\
+    &= \sigma^2 \int_{-\infty}^{\infty} \frac{2}{\sqrt{\pi}} \exp[-y^2]  y^2  \ dy \\
+\end{align*}
+
+We know from question 1, $\int_{-\infty}^{\infty} \exp[-\frac{(x-\mu)^2}{2\sigma^2}] \ dx = \sigma \sqrt{2 \pi}$.
+If we differentiate both sides w.r.t. $y$, we have :
+\begin{align*}
+    \int_{-\infty}^{\infty} 2 y^2 \exp[-y^2] \sigma \sqrt{2} \ dy &= \sigma \sqrt{2 \pi} \\
+    \int_{-\infty}^{\infty} \frac{2}{\sqrt{\pi}} \exp[-y^2]  y^2  \ dy &= 1
+\end{align*}
+
+Substitude back in, we have:
+\begin{align*}
+    m_2 &= \sigma^2
+\end{align*}
+
+\subsection{}
+For 1.4, first, we have:
+\begin{align*}
+    m_1 &= E_{x \sim p(x)}[x] \\
+    &= \int_{a}^{\infty} p(x) x \ dx \\
+    &= \frac{1}{\mathcal{Z}} \int_{a}^{\infty} \frac{1}{x^\gamma} x \ dx \\
+    &= \frac{1}{\mathcal{Z}} \int_{a}^{\infty} x^{1-\gamma} \ dx \\
+    &= \frac{1}{\mathcal{Z}} \frac{1}{2-\gamma} [x^{2-\gamma}] \biggr\rvert_a^{\infty} \\
+\end{align*}
+
+We can see, (1) in the case of $\gamma<=2$, $m_1 \rightarrow \infty$; 
+
+(2) in the case of $\gamma>2$, $x^{2-\gamma} |_a^{\infty}=-a^{2-\gamma}$, so:
+\begin{align*}
+    m_1 
+    &= a^{\gamma-1} (\gamma-1) \frac{1}{2-\gamma} (-a^{2-\gamma}) \\
+    &= \frac{\gamma-1}{\gamma-2} \cdot a \\
+\end{align*}
+
+Now in order to calculate $m_2$, we need $m_1$ to be finite, (and for case $\gamma<=2$ we don't have finite $m_2$ ):
+\begin{align*}
+    m_2 &= E_{x \sim p(x)}[(x-m_1)^2] \\
+    &= \frac{1}{\mathcal{Z}} \int_{a}^{\infty} x^{-\gamma} (x-m_1)^2 \ dx \\
+    &= \frac{1}{\mathcal{Z}} \int_{a}^{\infty} x^{-\gamma} (x^2 - 2 m_1 x + m_1 ^2) \ dx \\
+    &= \frac{1}{\mathcal{Z}} \int_{a}^{\infty} (x^{2-\gamma} - 2 m_1 x^{1-\gamma} + m_1 ^2 x^{-\gamma}) \ dx \\
+\end{align*}
+
+For the same argument when calculating $m_1$, we can see, (1) in the case of $\gamma<=3$, $m_2 \rightarrow \infty$;
+
+(2) in the case of $\gamma>3$, we have:
+\begin{align*}
+    m_2 &= \frac{1}{\mathcal{Z}} \int_{a}^{\infty} (x^{2-\gamma} - 2 m_1 x^{1-\gamma} + m_1 ^2 x^{-\gamma}) \ dx \\
+    &= a^{\gamma-1} (\gamma-1) \biggr[ \int_{a}^{\infty} (x^{2-\gamma} - 2 m_1 x^{1-\gamma} + m_1 ^2 x^{-\gamma}) \ dx \biggr] \\
+    &= a^{\gamma-1} (\gamma-1) \biggr[ \int_{a}^{\infty} x^{2-\gamma} \ dx - 2 m_1 \int_{a}^{\infty} x^{1-\gamma} \ dx + m_1 ^2 \int_{a}^{\infty} x^{-\gamma} \ dx \biggr] \\
+    &= a^{\gamma-1} (\gamma-1) \biggr[ \frac{a^{3-\gamma}}{\gamma-3} - 2 m_1 \frac{a^{2-\gamma}}{\gamma-2} + m_1 ^2 \frac{a^{1-\gamma}}{\gamma-1} \biggr] \\
+    &= a^{\gamma-1} (\gamma-1) \biggr[ \frac{a^{3-\gamma}}{\gamma-3} - 2 \frac{\gamma-1}{\gamma-2} \cdot a \frac{a^{2-\gamma}}{\gamma-2} + (\frac{\gamma-1}{\gamma-2} \cdot a)^2 \frac{a^{1-\gamma}}{\gamma-1} \biggr] \\
+    &= a^2 (\gamma-1) \biggr[ \frac{1}{\gamma-3} - 2 \frac{\gamma-1}{\gamma-2} \frac{1}{\gamma-2} + (\frac{\gamma-1}{\gamma-2})^2 \frac{1}{\gamma-1} \biggr] \\
+    &= a^2 (\gamma-1) \biggr[ \frac{1}{\gamma-3} - 2 \frac{\gamma-1}{(\gamma-2)^2} + \frac{\gamma-1}{(\gamma-2)^2} \biggr] \\
+    &= a^2 (\gamma-1) \biggr[ \frac{1}{\gamma-3} - \frac{\gamma-1}{(\gamma-2)^2} \biggr] \\
+    &= a^2 \biggr[ \frac{\gamma-1}{\gamma-3} - \frac{(\gamma-1)^2}{(\gamma-2)^2} \biggr] \\
+\end{align*}
+
+\subsection*{Comments}
+When analyzing data, we can compute the 1st and 2nd moment of the samples, and guess the distribution according to them.
+
+For example, if we found $m_2 = m_1^2$, it might suggest that the data is from an exponential distribution.
+
+\section{Simulation}
+\input{table}
+
+\subsection*{Convergence}
+The estimated $m_1$ and $m_2$ converge to analytical solutions of $m_1$ and $m_2$.
+The variance of $m_1$ and $m_2$ decrease with $K$.
+Yes, the simulation confirms the analytical solutions are good.
+
+
+\section{Derivation from (11) to (12)}
+Because the constraints are:
+\begin{align*}
+    E_{x \sim p(x)}[f_i(x)] = F_i
+\end{align*}
+for $1 \leq i \leq I$, let's write the function $J$ in this way:
+\begin{align*}
+    J = \sum_x p(x) \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \lambda_i (E_{x \sim p(x)}[f_i(x)]-F_i)
+\end{align*}
+And we start to solve for $\partial_{p(x)} J = 0$, we have:
+\begin{align*}
+    \partial_{p(x)} \biggr[ \sum_x p(x) \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \lambda_i \biggr(E_{x \sim p(x)}[f_i(x)]-F_i\biggr) \biggr] &= 0 \\
+    \partial_{p(x)} \biggr[ \sum_x p(x) \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \lambda_i \biggr(\sum_{x} p(x) f_i(x)-F_i\biggr) \biggr] &= 0 \\
+    \sum_x \partial_{p(x)} p(x) \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \partial_{p(x)} \lambda_i \biggr(\sum_{x} p(x) f_i(x)-F_i\biggr) &= 0 \\
+    \sum_x \partial_{p(x)} p(x) \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \partial_{p(x)} \lambda_i \sum_{x} p(x) f_i(x) - \sum_{1 \leq i \leq I} \partial_{p(x)} \lambda_i F_i &= 0 \\
+    \sum_x \partial_{p(x)} p(x) \log \frac{1}{p(x)} - \sum_x \partial_{p(x)} p(x) \sum_{1 \leq i \leq I} \lambda_i f_i(x) - 0 &= 0 \\
+    \sum_x \partial_{p(x)} p(x) \biggr[ \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \lambda_i f_i(x) \biggr] &= 0 \\
+\end{align*}
+Because in general $\partial_{p(x)} p(x) \neq 0$, so:
+\begin{align*}
+    \log \frac{1}{p(x)} - \sum_{1 \leq i \leq I} \lambda_i f_i(x) &= 0 \\
+    \log p(x) &= - \sum_{1 \leq i \leq I} \lambda_i f_i(x)  \\
+    p(x) &= \exp \biggr( - \sum_{1 \leq i \leq I} \lambda_i f_i(x) \biggr) \\
+\end{align*}
+Though ``$\propto$'' is used in the lecture note, but since $\lambda_i$ can be any constants, I think it is OK to use ``$=$''.
+
+\section{Prove there is a maximum entropy distribution on R}
+Proof:
+
+The Normal distribution is a maximum entropy distribution, and the Normal distribution has a support of $R$,
+thus there is a maximum entropy distribution on $R$.
 
 \end{document}
