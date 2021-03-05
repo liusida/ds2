@@ -6,6 +6,22 @@
 \begin{document}
 
 \section{Manual Gradient Descent}
+\begin{align*}
+    \frac{\partial \ell_i}{\partial \theta_j} = -2 x_{ij} (y_i - \sum_{j'=1}^{p} x_{ij'} \theta_{j'})\\
+\end{align*}
+\begin{align*}
+    \nabla_{\theta} \ell &= \sum_{i=1}^{N} \begin{bmatrix}
+        \frac{\partial \ell_i}{\partial \theta_1} \\
+        \frac{\partial \ell_i}{\partial \theta_2} \\
+        \vdots \\
+        \frac{\partial \ell_i}{\partial \theta_p} \\
+    \end{bmatrix}\\\\
+    &= -2 x^T (y-x\theta)
+\end{align*}
+
+I used the dataset this \href{https://www.kaggle.com/sulianova/cardiovascular-disease-dataset}{Cardiovascular Disease dataset}.
+
+The task is to predict whether a person has cardiovascular disease or not base on his age, height, etc.
 
 
 

@@ -1,16 +1,18 @@
 import numpy as np
 import pandas as pd
 
-# dataset source: https://www.kaggle.com/macespinoza/mlbootcamp5/code
+# dataset source: https://www.kaggle.com/sulianova/cardiovascular-disease-dataset
 np.random.seed(0)
 
 df = pd.read_csv("mlbootcamp5_train.csv", nrows = 4000)
+y_col = "cardio"
 # Normalization reduce overflow
-df["height_n"] = df["height"]/df["height"].mean()
-df["weight_n"] = df["weight"]/df["weight"].mean()
-
-x_cols = "height_n,weight_n,cholesterol,gluc,alco,active,cardio".split(",")
-y_col = "smoke"
+all_columns = df.columns
+for col_name in all_columns:
+    if y_col!=col_name:
+        df[f"{col_name}"] = df[col_name]/df[col_name].mean()
+x_cols = "age,gender,height,weight,ap_hi,ap_lo,cholesterol,gluc,smoke,alco,active"
+x_cols = x_cols.split(",")
 num_cols = len(x_cols)
 
 x = df[x_cols].to_numpy()
@@ -23,7 +25,9 @@ y_train = y[:num_train]
 y_test = y[num_train:]
 
 # weights: the thetas
-w = np.random.random([num_cols,1])
+# w = np.random.random([num_cols,1])
+# let's use 0 as starting point.
+w = np.zeros([num_cols,1])
 def model(x):
     """A discrimitive model"""
     return np.matmul(x, w).flatten()
@@ -36,16 +40,33 @@ def test_model():
     print(f"Test loss: {l_mean_after}")
 
     y_hat=(y_hat>0.5).astype(np.int)
-    accuracy = (y_test==y_hat).sum() / len(y_hat)
-    print(f"Accuracy {accuracy}")
 
+    condition_positive = (y_test==1).sum()
+    condition_negative = (y_test==0).sum()
+    true_positive = ((y_test==1)&(y_hat==1)).sum()
+    true_negative = ((y_test==0)&(y_hat==0)).sum()
+    false_positive = ((y_test==0)&(y_hat==1)).sum()
+    false_negative = ((y_test==1)&(y_hat==0)).sum()
+    
+    assert condition_positive+condition_negative==len(y_hat)
+    assert true_positive+true_negative+false_positive+false_negative==len(y_hat)
+
+    epsilon=1e-8
+    tpr = true_positive/condition_positive
+    tnr = true_negative/condition_negative
+    ppv = true_positive/(true_positive+false_positive+epsilon)
+    npv = true_negative/(true_negative+false_negative+epsilon)
+
+    accuracy = (y_test==y_hat).sum() / len(y_hat)
+    print(f"Accuracy {accuracy:.3f}")
+    print(f"Sensitivity {tpr:.3f}, Specificity {tnr:.3f}\nPrecision {ppv:.3f}, Negative Predictive Value {npv:.3f}")
     print("")
 
 # Test before training
 print("Before training:")
 test_model()
 # Train
-gamma = 1e-5
+gamma = 1e-6
 num_epochs = int(1e4)
 batch_size = 100
 for i in range(num_epochs):
@@ -59,7 +80,7 @@ for i in range(num_epochs):
         gradient = -2 * np.matmul(x_batch.T, np.expand_dims(diff,-1))
         w -= gamma*gradient
     l_sum = (diff**2).sum()
-    if i%int(num_epochs/10)==0:
+    if i%int(num_epochs/5)==0:
         print(f"Train loss: {l_sum}")
 
 # Test after training
