@@ -4,7 +4,7 @@ import pandas as pd
 # dataset source: https://www.kaggle.com/sulianova/cardiovascular-disease-dataset
 np.random.seed(0)
 
-df = pd.read_csv("mlbootcamp5_train.csv", nrows = 4000)
+df = pd.read_csv("mlbootcamp5_train.csv", nrows = None)#4000)
 y_col = "cardio"
 # Normalization reduce overflow
 all_columns = df.columns
@@ -67,7 +67,7 @@ print("Before training:")
 test_model()
 # Train
 gamma = 1e-6
-num_epochs = int(1e4)
+num_epochs = int(1e3)
 batch_size = 100
 for i in range(num_epochs):
     for j in range(0, num_train, batch_size):

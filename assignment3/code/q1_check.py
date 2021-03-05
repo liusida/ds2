@@ -2,7 +2,7 @@ import numpy as np
 import torch
 torch.manual_seed(0)
 
-# sanity check
+# sanity check, a toy example, check the results with pytorch autodiff.
 x = torch.rand([5,10])
 w = torch.rand([10,1])
 y = torch.rand([5])
