@@ -4,19 +4,20 @@
 \usepackage{float}
 
 \begin{document}
-
+Collaborators: Julia Zimmerman, Jordan Donovan, Sam Rosenblatt, Milo Trujillo, Phil Nguyen, Nicholas Vartanian,Connor Klopfer, Brett Meyer...
+We might have discussed problems related to the assignments via Slack.
 \section{Manual Gradient Descent}
 \begin{align*}
-    \frac{\partial \ell_i}{\partial \theta_j} = -2 x_{ij} (y_i - \sum_{j'=1}^{p} x_{ij'} \theta_{j'})\\
+    \frac{\partial \ell_i}{\partial \theta_j} = -2 x_{ij} (y_i - \sum_{j'=1}^{p} x_{ij'} \theta_{j'}) \\
 \end{align*}
 \begin{align*}
-    \nabla_{\theta} \ell &= \sum_{i=1}^{N} \begin{bmatrix}
+    \nabla_{\theta} \ell & = \sum_{i=1}^{N} \begin{bmatrix}
         \frac{\partial \ell_i}{\partial \theta_1} \\
         \frac{\partial \ell_i}{\partial \theta_2} \\
-        \vdots \\
+        \vdots                                    \\
         \frac{\partial \ell_i}{\partial \theta_p} \\
-    \end{bmatrix}\\\\
-    &= -2 x^T (y-x\theta)
+    \end{bmatrix} \\\\
+                         & = -2 x^T (y-x\theta)
 \end{align*}
 
 I used the dataset this \href{https://www.kaggle.com/sulianova/cardiovascular-disease-dataset}{Cardiovascular Disease dataset}.
@@ -27,7 +28,7 @@ I split the dataset into 80\% training and 20\% testing.
 
 The source code is on \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q1.py}{GitHub}.
 
-I discovered that larger batch size and larger learning rate will result in faster convergence, 
+I discovered that larger batch size and larger learning rate will result in faster convergence,
 however, if learning rate is too large, the learning might diverge,
 and if batch size and learning rate is too large will cause overflow.
 So I normalized the input to reduce the possibility of overflow, and choose a batch size of 7k, and a small learning rate.
@@ -54,23 +55,20 @@ If the learning rate is low, it will be very slow in finding the minima on that 
 
 Analytically, we need to solve the equations: $\frac{\partial f}{\partial x} = 0$ and $\frac{\partial f}{\partial y} = 0$.
 
-% \[
-%     \systeme*{\frac{\partial f}{\partial x} = 0, \frac{\partial f}{\partial y} = 0}
-% \]
 \begin{align*}[left = \empheqlbrace]
-    \frac{\partial}{\partial x} (1-x)^2+100(y-x^2)^2 &= 0\\
-    \frac{\partial}{\partial y} (1-x)^2+100(y-x^2)^2 &= 0\\
+    \frac{\partial}{\partial x} (1-x)^2+100(y-x^2)^2 & = 0 \\
+    \frac{\partial}{\partial y} (1-x)^2+100(y-x^2)^2 & = 0 \\
 \end{align*}
 
 \begin{align*}[left = \empheqlbrace]
-    400x^3-400xy+2x-2 &= 0\\
-    y&=x^2\\
+    400x^3-400xy+2x-2 & = 0  \\
+    y                 & =x^2 \\
 \end{align*}
 
 \begin{align*}
-    400x^3-400x^3+2x-2 &= 0\\
-    x&=1\\
-    y&=1\\
+    400x^3-400x^3+2x-2 & = 0 \\
+    x                  & =1  \\
+    y                  & =1  \\
 \end{align*}
 
 Using routine gradient descent, start from $x_0=0, y_0=0$, learning rate $\gamma=10^{-3}$, run for 10k steps.
@@ -100,6 +98,145 @@ Figure \ref{fig:gd_m} shows the trajectory.
     \label{fig:gd_m}
 \end{figure}
 
-\section{}
+\newpage
+\section{Math notations and plate notations}
+\subsection{Basic Parametric Density Estimation}
+Mathematically, let $l=\text{loc}$, $s=\text{inv scale}$, we have:
+\begin{align*}
+     & p(l, s, d_i)                                                                                                                                                \\
+     & \propto p(l)p(s)\prod_{i=1}^N p(d_i|l,s)                                                                                                                    \\
+     & = \text{Normal}(0,1) \text{Inv-Gamma}(3,2) \prod_{i=1}^N \text{Normal}(l, s)                                                                                \\
+     & = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}l^2} \frac{2^3}{3!}s^{-3-1} e^{-\frac{2}{s}} \prod_{i=1}^N \frac{1}{s\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{d_i-l}{s})^2} \\
+     & = \frac{4}{3} (\frac{1}{\sqrt{2\pi}})^{N+1} s^{-4-N} e^{-\frac{l^2}{2} -\frac{2}{s} - \frac{1}{2}\sum_{i=1}^N (\frac{d_i-l}{s})^2}                          \\
+\end{align*}
+It doesn't seem to have conjugate prior to me.
+
+Plate notation:
+\begin{figure}[h]
+    \centering
+    \tikz{
+        % nodes
+        \node[obs] (data) {$d_i$};%
+        \node[latent,above=of data] (loc) {loc};
+        %    \node[latent,above=of loc,xshift=-1cm] (mu) {$\mu$}; %
+        %    \node[latent,above=of loc,xshift=1cm] (sigma) {$\sigma$}; %
+        \node[latent,left=of data] (scale) {scale};
+        \node[latent,left=of scale] (inv_scale) {inv\_scale};
+        %    \node[latent,left=of inv_scale,yshift=1cm] (alpha) {$\alpha$};
+        %    \node[latent,left=of inv_scale,yshift=-1cm] (beta) {$\beta$};
+        % plate
+        \plate [inner sep=.3cm,xshift=.02cm,yshift=.2cm] {plate1} {(data)} {N}; %
+        % edges
+        %    \edge {sigma,mu} {loc}
+        %    \edge {alpha,beta} {inv_scale}
+        \edge {inv_scale} {scale}
+        \edge {scale,loc} {data}
+    }
+    \caption{Plate notation}
+\end{figure}
+
+\newpage
+\subsection{Continuous, nonstationary hidden Markov}
+
+Mathematically, let $l=\text{loc}$, $s=e^{\text{log scale}}$, $o=\text{obs scale}$, we have:
+\begin{align*}
+     & p(l,s,o,x_{n,t},y_{n,t})                                                                                                                                         \\
+     & =p(l)p(s)p(o)\prod_{n=1}^N p(x_{n,0}|l,s) \prod_{t=1}^T p(x_{n,t}|l,x_{n,t-1},s) p(y_{n,t}|x_{n,t}, o)                                                           \\
+     & =\text{Normal}(0,1) \text{LogNormal}(0,1) \text{Gamma}(2,2) \prod_{n=1}^N \text{Normal}(l,s) \prod_{t=1}^T \text{Normal}(l+x_{n,t-1},s) \text{Normal}(x_{n,t},o) \\
+     & =\frac{1}{\sqrt{2\pi}}e^{-\frac{l^2}{2}} \cdot
+    \frac{1}{s\sqrt{2\pi}}e^{-\frac{\log(s)^2}{2}} \cdot
+    \frac{1}{2!2^2}o^{2-1}e^{-\frac{o}{2}}  \cdot
+    \prod_{n=1}^N
+    \frac{1}{s\sqrt{2\pi}}e^{-\frac{(x_{n,0}-l)^2}{2s^2}}
+    \prod_{t=1}^T
+    \frac{1}{s\sqrt{2\pi}}e^{-\frac{(x_{n,t}-l-x_{n,t-1})^2}{2s^2}}
+    \frac{1}{o\sqrt{2\pi}}e^{-\frac{(y_{n,t}-x_{n,t})^2}{2o^2}}                                                                                                         \\
+\end{align*}
+
+Plate notation (Reference: \href{https://davidrushingdewhurst.com/blog/2020-07-28keep-using-plate-notation.html}{this blog post}):
+\begin{figure}[h]
+    \centering
+    \tikz{
+        % \draw[lightgray,ultra thin] (-6,-6) grid (6,6);
+        % nodes
+        \node[obs] (y_t) {$y_{n,t}$};%
+        \node[latent,left=of y_t] (x_t) {$x_{n,t}$};%
+        \node[latent,above=of x_t] (x_0) {$x_{n,0}$};%
+        \node[latent,above=of x_0,xshift=1.5cm] (loc) {loc};%
+        \node[latent,right=of loc] (scale) {scale};%
+        \node[latent,above=of scale] (log_scale) {log scale};%
+        \node[latent,right=of y_t] (obs_scale) {obs scale};%
+        % plate
+        \plate [inner sep=.3cm,xshift=.02cm,yshift=.2cm] {episode} {(x_t)(y_t)} {T}; %
+        \plate [inner sep=.3cm,xshift=.02cm,yshift=.2cm] {plate1} {(x_0)(episode)} {N}; %
+        % edges
+        \edge {obs_scale,x_t} {y_t}
+        \edge {loc,scale} {x_t}
+        \edge {loc,scale} {x_0}
+        \edge {log_scale} {scale}
+        % hmm...
+        \draw[blue, thick, ->,shorten >=1pt] (x_0) to [out=-90,in=90] node[left,yshift=.2cm,xshift=-.2cm] {$t=1$} (x_t);
+        \Cycle[blue, ->]{x_t}{180}{7mm}[{node[anchor=0,pos=0.5]{$t=2,...,T (t-1\rightarrow t)$}}]{7mm}
+    }
+    \caption{Plate notation}
+\end{figure}
+
+\newpage
+\subsection{Switching model}
+Mathematically, let $s'=\text{log scale}$, $s=e^{s'}$, $w=\text{switch}$, $m_1=\text{model1}$, $m_2=\text{model2}$, we have:
+\begin{align*}
+     & p(s,z_0,z_t,p_t,m_{1,t},m_{2,t},w_{t,n},y_{t,n},x_{t,n})                                                                                             \\\\
+     & =p(s)p(z_0|s) \times                                                                                                                                 \\
+     & \prod_{t=1}^T p(z_t|z_{t-1}) p(p_t|z_t) 
+     \prod_{n=1}^N p(w_{t,n}|p_t) 
+     p(m_{1,t}|t) p(m_{2,t}|t) p(y_{t,n}|w_{t,n},m_{1,t},m_{2,t}) 
+     p(x_{t,n},y_{t,n}) \\\\
+     & =\text{LogNormal}(0,1)
+    \text{Normal}(0,s) \times                                                                                                                               \\
+     & \prod_{t=1}^T \text{LogitNormal}(z_{t-1},1)
+    \prod_{n=1}^N \text{Bernoulli}(p_t)
+    p(m_{1,t}|t) p(m_{2,t}|t)
+    p(y_{t,n}|w_{t,n},m_{1,t},m_{2,t})
+    \text{Poisson}(y_{t,n})                                                                                                                                 \\\\
+     & =\frac{1}{s\sqrt{2\pi}}e^{-\frac{\log(x)^2}{2}} \cdot
+    \frac{1}{s\sqrt{2\pi}}e^{-\frac{z_0^2}{2s^2}} \cdot \\
+    &\prod_{t=1}^T \frac{1}{\sqrt{2\pi}} e^{-\frac{\text{logit}(z_t-z_{t-1})^2}{2}} \cdot
+    \prod_{n=1}^N p_t^{w_{t,n}} (1-p_t)^{1-w_{t,n}}
+    p(m_{1,t}|t)^{w_{t,n}} p(m_{2,t}|t)^{1-w_{t,n}}
+    \frac{y_{t,n}^{x_{t,n}} e^{-y_{t,n}}}{x_{t,n}!}
+\end{align*}
+
+
+Plate notation (next page):
+\begin{figure}[t]
+    \centering
+    \tikz{
+        % \draw[lightgray,ultra thin] (-6,-6) grid (6,6);
+        % nodes
+        \node[obs] (x_t) {$x_{n,t}$};%
+        \node[latent, left=of x_t] (y_t) {$y_{n,t}$};
+        \node[latent, below=of y_t, xshift=-2cm] (model1) {model1$_t$};
+        \node[latent, below=of y_t] (model2) {model2$_t$};
+        \node[latent, left=of y_t, yshift=2cm] (switch) {switch$_{t,n}$};
+        \node[latent, left=of switch] (p) {$p_t$};
+        \node[latent, left=of p] (z) {$z_t$};
+        \node[latent, above=of z] (z0) {$z_0$};
+        \node[latent, above=of z0] (scale) {scale};
+        \node[latent, left=of scale] (log_scale) {log scale};
+        % plate
+        \plate [inner sep=.3cm] {plate_switch} {(x_t)(y_t)(switch)} {N};
+        \plate [inner sep=.3cm] {episode} {(plate_switch)(model1)(model2)(p)(z)} {T};
+        % edges
+        \edge {scale} {z0};
+        \edge {log_scale} {scale};
+        \edge {z} {p};
+        \edge {p} {switch};
+        \edge {switch, model1, model2} {y_t};
+        \edge {y_t} {x_t};
+        \draw[blue, thick, ->,shorten >=1pt] (z0) to [out=-90,in=90] node[left,yshift=.2cm,xshift=-.2cm] {$t=1$} (z);
+        \Cycle[blue, ->]{z}{180}{7mm}[{node[anchor=0,pos=0.5]{$t=2,...,T (t-1\rightarrow t)$}}]{7mm}
+    }
+    \caption{Plate notation}
+\end{figure}
 
 \end{document}
