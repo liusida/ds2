@@ -26,7 +26,7 @@ The are 70k records in this dataset.
 The task is to predict whether a person has cardiovascular disease or not base on his age, height, etc.
 I split the dataset into 80\% training and 20\% testing.
 
-The source code is on \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q1.py}{GitHub}.
+The source code is on \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q1.py}{GitHub q1.py}.
 
 I discovered that larger batch size and larger learning rate will result in faster convergence,
 however, if learning rate is too large, the learning might diverge,
@@ -97,6 +97,8 @@ Figure \ref{fig:gd_m} shows the trajectory.
     \caption{Visualization of the optimization trajectory with momentum. $x \in (0,3)$, $y \in (-2,5)$.}
     \label{fig:gd_m}
 \end{figure}
+
+The source code is on \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q2.py}{GitHub q2.py}.
 
 \newpage
 \section{Math notations and plate notations}
@@ -208,7 +210,7 @@ Mathematically, let $s'=\text{log scale}$, $s=e^{s'}$, $w=\text{switch}$, $m_1=\
 
 
 Plate notation (next page):
-\begin{figure}[t]
+\begin{figure}[!t]
     \centering
     \tikz{
         % \draw[lightgray,ultra thin] (-6,-6) grid (6,6);
@@ -239,4 +241,46 @@ Plate notation (next page):
     \caption{Plate notation}
 \end{figure}
 
+\newpage
+\section{PPL via Pyro}
+
+The source code is on GitHub:
+\begin{enumerate}
+    \item \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q4.1.py}{q4.1.py}.
+    \item \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q4.2.py}{q4.2.py}.
+    \item \href{https://github.com/liusida/ds2/blob/main/assignment3/code/q4.3.py}{q4.3.py}.
+\end{enumerate}
+
+\newpage
+\section{Project Thoughts}
+\subsection*{Bayesian Meta Unsupervised Learning}
+Suppose we have an intelligent agent.
+The agent has a camera and several motors.
+If we want the agent to learn its surroundings by itself in an unsupervised fashion,
+we might want the agent can learn to processing the video images by itself.
+How can we do that?
+We can assume that the world is not always changing abruptly.
+With this assumption, the agent can update its belief at each time step using Bayesian Theorem.
+
+In this course project, I want to demonstrate the possibility of this in a simplified version.
+I am going to use MNIST to do this.
+First, construct a small neural network;
+Pass one image of ``0'' to the network, we will get a probability $p_0'$;
+Pass the second image of ``0'' to the network, we will get the second probability $p_0''$;
+$p_0'$ is the prior, and $p_0''$ is the posterior.
+So, we should update $p_0'$ into $\frac{p_0' p_0''}{z}$, where $z$ is the normalization factor.
+So, the loss function can be:
+\begin{align*}
+    \mathcal{L} = ||p_0' - \frac{p_0' p_0''}{z}||_2^2
+\end{align*}
+Then this learning signal can be used to adjust weights of the networks.
+
+After we trained the network with ``0''s for a while, we can train ``1''s, ``2''s, and so on.
+We ignore the learning signal during switching between different numbers (because in the agent scenario, we assume there's no such abrupt change, the world is changing gradually.)
+
+After all training is done, we can pass the test images through the network and obtain the probabilities, 
+and we can measure if the outcomes are different when the numbers are different.
+
+I haven't look into the literatures for this idea.
+I am not sure it is novel or not.
 \end{document}
