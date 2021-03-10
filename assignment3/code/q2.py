@@ -1,3 +1,7 @@
+# requirements.txt:
+# pyro 1.6.0
+# torch 1.8.0
+
 import numpy as np
 import matplotlib.pyplot as plt
 

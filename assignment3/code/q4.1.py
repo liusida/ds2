@@ -1,3 +1,7 @@
+# requirements.txt:
+# pyro 1.6.0
+# torch 1.8.0
+
 import pyro
 from pyro.distributions import Normal,Gamma,InverseGamma,Bernoulli,Poisson
 

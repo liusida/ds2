@@ -1,5 +1,9 @@
-# refer to: https://github.com/pyro-ppl/pyro/blob/dev/examples/hmm.py
-from assignment3.code.ref_hmm import main
+# requirements.txt:
+# pyro 1.6.0
+# torch 1.8.0
+
+# reference: https://github.com/pyro-ppl/pyro/blob/dev/examples/hmm.py
+
 import numpy as np
 import torch
 import pyro
