@@ -39,6 +39,12 @@ I also report the final confusion matrix:
 Sensitivity 0.574, Specificity 0.712,
 Precision 0.667, Negative Predictive Value 0.625.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\textwidth]{./q1.pdf}
+    \caption{Learning curve and two test points.}
+\end{figure}
+
 Why would I choose to manually do gradient descent?
 Because I want to learn how it works, and also, as David mentioned in class, sometimes we have constraints in practice, for example there's possibility that PyTorch is not supported.
 
@@ -108,8 +114,8 @@ Mathematically, let $l=\text{loc}$, $s=\text{inv scale}$, we have:
      & p(l, s, d_i)                                                                                                                                                \\
      & \propto p(l)p(s)\prod_{i=1}^N p(d_i|l,s)                                                                                                                    \\
      & = \text{Normal}(0,1) \text{Inv-Gamma}(3,2) \prod_{i=1}^N \text{Normal}(l, s)                                                                                \\
-     & = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}l^2} \frac{2^3}{3!}s^{-3-1} e^{-\frac{2}{s}} \prod_{i=1}^N \frac{1}{s\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{d_i-l}{s})^2} \\
-     & = \frac{4}{3} (\frac{1}{\sqrt{2\pi}})^{N+1} s^{-4-N} e^{-\frac{l^2}{2} -\frac{2}{s} - \frac{1}{2}\sum_{i=1}^N (\frac{d_i-l}{s})^2}                          \\
+     & = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}l^2} \frac{2^3}{2!}s^{-3-1} e^{-\frac{2}{s}} \prod_{i=1}^N \frac{1}{s\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{d_i-l}{s})^2} \\
+     & = 4 (\frac{1}{\sqrt{2\pi}})^{N+1} s^{-4-N} e^{-\frac{l^2}{2} -\frac{2}{s} - \frac{1}{2}\sum_{i=1}^N (\frac{d_i-l}{s})^2}                          \\
 \end{align*}
 It doesn't seem to have conjugate prior to me.
 
@@ -253,34 +259,117 @@ The source code is on GitHub:
 
 \newpage
 \section{Project Thoughts}
-\subsection*{Bayesian Meta Unsupervised Learning}
-Suppose we have an intelligent agent.
-The agent has a camera and several motors.
-If we want the agent to learn its surroundings by itself in an unsupervised fashion,
-we might want the agent can learn to processing the video images by itself.
-How can we do that?
-We can assume that the world is not always changing abruptly.
-With this assumption, the agent can update its belief at each time step using Bayesian Theorem.
+\subsection{Bayesian Learning Signal}
+I like Deep Learning.
 
-In this course project, I want to demonstrate the possibility of this in a simplified version.
-I am going to use MNIST to do this.
-First, construct a small neural network;
-Pass one image of ``0'' to the network, we will get a probability $p_0'$;
-Pass the second image of ``0'' to the network, we will get the second probability $p_0''$;
-$p_0'$ is the prior, and $p_0''$ is the posterior.
-So, we should update $p_0'$ into $\frac{p_0' p_0''}{z}$, where $z$ is the normalization factor.
-So, the loss function can be:
+In Supervised Learning, the learning signal comes from the difference between the truth label $y$ and the prediction $\hat{y}$.
+
+To analyze its assumption, I perform a derivation using MAP:
+
+Suppose we observe a image $\cal{I}$, we want to know a vector representation of the image $h$ that can tell us $y=\text{argmax}(h)$.
+
+Assuming the prior to be $h_0 \sim \textbf{Uniform}(a,b)$, here $a$ and $b$ are constants.
+The observation $\hat{h}$ is the representation produced by the network after seeing the image,
+Assuming $\hat{h} \sim \textbf{Normal}(h, \sigma)$, here we don't know $\sigma$ yet.
+This Normal distribution is saying the network can produce a prediction that is centered at $h$ but very noisy.
+These two are quite strong assumptions.
+
+Now I can use MAP to compute the point estimate for $h_0$ given $\hat{h}$:
 \begin{align*}
-    \mathcal{L} = ||p_0' - \frac{p_0' p_0''}{z}||_2^2
+    p(h_0|\hat{h}) &\propto p(\hat{h}|h_0) p(h_0)\\
+    &= \textbf{Normal}(h,\sigma) \cdot \textbf{Uniform}(a,b) \\
+    &= \frac{1}{\sigma \sqrt{2 \pi}} e^{-\frac{(h-\hat{h})^2}{2\sigma^2}} \cdot 1\\
 \end{align*}
-Then this learning signal can be used to adjust weights of the networks.
 
-After we trained the network with ``0''s for a while, we can train ``1''s, ``2''s, and so on.
-We ignore the learning signal during switching between different numbers (because in the agent scenario, we assume there's no such abrupt change, the world is changing gradually.)
+Solve $\frac{d}{dh}p(h_0|\hat{h})=0$ to find the maximum:
+\begin{align*}
+    \frac{h_0-\hat{h}}{\sigma^3} e^{-\cdots} &= 0\\
+    h_0-\hat{h} = 0
+\end{align*}
 
-After all training is done, we can pass the test images through the network and obtain the probabilities, 
-and we can measure if the outcomes are different when the numbers are different.
+So we want to update our belief from $h_0$ to $h_1$: $h_1 = \hat{h}$.
 
-I haven't look into the literatures for this idea.
-I am not sure it is novel or not.
+This is how we find the update target, I think?
+And we apply L2 loss to it, it'll just like a normal supervised learning signal.
+
+Now if the agent has the chance to observe a very similar image $\cal{I}'$, here we don't use the i.i.d. assumption,
+so a better prior should be $h_1$ after the update of the first step.
+The problem here is that by using MAP, we only have a point estimator, 
+we don't have a distribution for $h_1$, how can I discover a good $h_1$?
+
+Why I am doing this?
+
+Imagine there is a robot with a camera on its face.
+It will observe the world, frame by frame.
+I assume the current frame of the world is very much similar to the previous frame.
+If I can derive a learning signal from this assumption,
+the agent will be able to learn without human providing labels.
+
+Once there is a good way to produce the representation $h$ of the image,
+we can use whatever existing supervised learning or reinforcement learning to utilize this representation,
+and the learning will be faster, I hope.
+
+I read \cite{wang_survey_2020}. It focus of this paper is to connect Bayesian Inference and Deep Learning at an application level, which is not my focus. 
+But I learned some basic concepts from it.
+The so called Bayesian treatments might give the distribution of $h$.
+
+\subsection{Thought two}
+
+With a second thought, the previous idea turns out to be a Recurrent Neural Network.
+
+The representation $h_t$ is just the hidden state.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\textwidth]{./rnn.pdf}
+    \caption{A RNN with Bayesian updated hidden states.}
+\end{figure}
+
+The purpose of the observation is to build a good $h_t$, 
+so that if other modules want to use this representation,
+it is readily accessible.
+
+So the job for the network module $N$ is to update $h_t$ properly using Bayesian Theorem.
+
+This is different from the Bayesian Neural Networks (BNN).
+In BNN, people tries to make the weights and biases to be r.v.'s.
+
+In the Long Short Term Memory (LSTM) model, there is a cell state, which is similar to this $h$.
+Maybe replacing this gating and addition with a Bayesian update will give what I want.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\textwidth]{./LSTM3-C-line.png}
+    \caption{Cell States are updated by Gating and Addition.}
+\end{figure}
+
+Later,
+I realized it is related to the World Model  \cite{ha_world_2018},
+where they use a variational autoencoder to get a latent $z$ (we call that $h$ earlier), and pass that into a RNN.
+However, the $h$ produced by the RNN in the World Model is not parameters of distributions, maybe I can improve this.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{./world_model.png}
+    \caption{In the World Model, the $z$ is produced by VAE, so $z$ is the parameters of some distributions.}
+\end{figure}
+
+
+
+\subsection{Automated Model Search?}
+
+Another thought for the course project is from the idea of automated architecture search.
+The architectures are analogous to the generative models in Bayesian Inference.
+And people use Evolutionary Algorithms to search for better architectures rather than design it manually \cite{real_regularized_2019}.
+
+So a typically case could be, the EA produces a population of DAGs, 
+and BI get all the parameters, and we have a set of final performances,
+and EA produces a new population of DAGs by mutating the best DAGs,
+and BI get all the parameters again, and we get another set of the performances.
+
+But I am still not familiar with the whole Bayesian Inference process, so I'm not sure if the idea of automated design can be applied to Bayesian Inference.
+
+\bibliographystyle{apalike}
+\bibliography{b}
+
 \end{document}

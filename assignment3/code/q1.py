@@ -61,14 +61,16 @@ def test_model():
     print(f"Accuracy {accuracy:.3f}")
     print(f"Sensitivity {tpr:.3f}, Specificity {tnr:.3f}\nPrecision {ppv:.3f}, Negative Predictive Value {npv:.3f}")
     print("")
+    return l_mean_after
 
 # Test before training
 print("Before training:")
-test_model()
+test_loss_0 = test_model()
 # Train
 gamma = 1e-6
 num_epochs = int(1e3)
 batch_size = 100
+train_losses = []
 for i in range(num_epochs):
     for j in range(0, num_train, batch_size):
         x_batch = x_train[j:j+batch_size, :]
@@ -79,11 +81,22 @@ for i in range(num_epochs):
 
         gradient = -2 * np.matmul(x_batch.T, np.expand_dims(diff,-1))
         w -= gamma*gradient
-    l_sum = (diff**2).sum()
+    l_sum = (diff**2).mean()
     if i%int(num_epochs/5)==0:
         print(f"Train loss: {l_sum}")
+    train_losses.append(l_sum)
 
 # Test after training
 
 print("After training:")
-test_model()
+test_loss = test_model()
+
+import matplotlib.pyplot as plt
+plt.scatter([0], [test_loss_0], c="red", label="test loss")
+plt.plot(np.arange(1,len(train_losses)+1), train_losses, label="training loss")
+plt.scatter([len(train_losses)+1], [test_loss], c="red")
+plt.xlabel("step")
+plt.ylabel("loss")
+plt.legend()
+plt.savefig("../q1.pdf")
+plt.show()

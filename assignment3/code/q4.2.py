@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import pyro
 from pyro.distributions import Normal,Gamma,InverseGamma,Bernoulli,Poisson
+import matplotlib.pyplot as plt
 
 def continuous_hmm(obs, N, T):
     assert obs is None or (N==obs.shape[0] and T==obs.shape[1])
@@ -28,5 +29,14 @@ def continuous_hmm(obs, N, T):
 
 if __name__ == "__main__":
     # simple test
-    ys = continuous_hmm(None, 2,3)
-    print(np.array(ys))
+    ys = continuous_hmm(None, 1000, 30)
+    ys = np.array(ys)
+    y = np.mean(ys, axis=1)
+    ci = 1.96 * np.std(ys, axis=1)/y
+    x= np.arange(1,ys.shape[0]+1)
+    plt.plot(x,y)
+    plt.fill_between(x, (y-ci), (y+ci), color='b', alpha=.1)
+    plt.show()
+    #hmm... I am not sure why it looks like this...
+
+    # print(np.array(ys))
