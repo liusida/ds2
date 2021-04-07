@@ -1,3 +1,9 @@
+github/
+try_*
+arxiv_analysis/
+arxiv_analysis/*
+df_conf/
+
 tmp_*
 Exported Items.bib
 
